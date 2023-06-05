@@ -1,9 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createMemoryHistory } from 'history';
 import Login from '../components/Login';
 
 const loginInp = 'login-submit-btn';
 const passInp = 'password-input';
 const emailInp = 'email-input';
+const validEmail = 'hesr.ribeiro@gmail.com';
 
 describe('Testando a tela de Login ao máximo', () => {
   it('verifica os inputs de senha e email', () => {
@@ -26,11 +29,20 @@ describe('Testando a tela de Login ao máximo', () => {
     const emailInput = screen.getByTestId(emailInp);
     const passwordInput = screen.getByTestId(passInp);
     const loginBtn = screen.getByTestId(loginInp);
+    const history = createMemoryHistory();
 
-    fireEvent.change(emailInput, { target: { value: 'hesr.ribeiro@gmail.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'senha123456' } });
+    userEvent.type(emailInput, validEmail);
+    userEvent.type(passwordInput, '12345678124546');
 
     expect(loginBtn).toBeEnabled();
+
+    userEvent.click(loginBtn);
+
+    const { pathname } = history.location;
+    expect(pathname).toBe('/meals');
+
+    const savedUser = JSON.parse(localStorage.getItem('user'));
+    expect(savedUser).toEqual({ email: validEmail });
   });
 
   it('verifica comportamento com inputs incorretos', () => {
@@ -40,8 +52,8 @@ describe('Testando a tela de Login ao máximo', () => {
     const passwordInput = screen.getByTestId(passInp);
     const loginBtn = screen.getByTestId(loginInp);
 
-    fireEvent.change(emailInput, { target: { value: 'xablau' } });
-    fireEvent.change(passwordInput, { target: { value: 'senha123456' } });
+    userEvent.type(emailInput, 'xablau');
+    userEvent.type(passwordInput, 'senha123456');
 
     expect(loginBtn).toBeDisabled();
   });
@@ -53,8 +65,8 @@ describe('Testando a tela de Login ao máximo', () => {
     const passwordInput = screen.getByTestId(passInp);
     const loginBtn = screen.getByTestId(loginInp);
 
-    fireEvent.change(emailInput, { target: { value: 'hesr.ribeiro@gmail.com' } });
-    fireEvent.change(passwordInput, { target: { value: '123' } });
+    userEvent.type(emailInput, { target: { value: 'hesr.ribeiro@gmail.com' } });
+    userEvent.type(passwordInput, { target: { value: '123' } });
 
     expect(loginBtn).toBeDisabled();
   });

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { useHistory } from 'react-router-dom';
 import validator from 'validator';
 
 function Login() {
   const [validateEmail, setValidateEmail] = useState('');
   const [validatePass, setValidadePass] = useState('');
   const [buttonState, setButtonState] = useState(true);
+  const history = useHistory();
 
   const PASS_LENGTH = 6;
 
@@ -24,6 +26,11 @@ function Login() {
   const handlePass = ({ target }) => {
     setValidadePass(target.value);
     verifyInp();
+  };
+
+  const handleClick = () => {
+    localStorage.setItem('user', JSON.stringify({ email: validateEmail }));
+    history.push('/meals');
   };
 
   return (
@@ -58,6 +65,7 @@ function Login() {
         variant="danger"
         data-testid="login-submit-btn"
         disabled={ buttonState }
+        onClick={ handleClick }
       >
         Login
 
