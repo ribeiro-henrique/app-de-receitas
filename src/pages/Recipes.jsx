@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
+import Header from '../components/Header';
+
 import { useHeader } from '../context/HeaderContext';
-import Header from './Header';
 
 function Recipes() {
   const { setTitle, setShowSearchIcon } = useHeader();
@@ -18,6 +19,7 @@ function Recipes() {
   return (
     <div>
       <Header />
+
     </div>
   );
 }

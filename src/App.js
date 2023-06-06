@@ -1,16 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { HeaderProvider } from './context/HeaderContext';
 import './App.css';
-import Login from './components/Login';
-import Recipes from './components/Recipes';
-import RecipeDetails from './components/RecipeDetails';
-import RecipeInProgress from './components/RecipeInProgress';
 import Profile from './components/Profile';
-import DoneRecipes from './components/DoneRecipes';
-import FavoriteRecipes from './components/FavoriteRecipes';
-import Drinks from './components/Drinks';
+import { HeaderProvider } from './context/HeaderContext';
+import DoneRecipes from './pages/DoneRecipes';
+import Drinks from './pages/Drinks';
+import FavoriteRecipes from './pages/FavoriteRecipes';
+import Login from './pages/Login';
+import RecipeDetails from './pages/RecipeDetails';
+import RecipeInProgress from './pages/RecipeInProgress';
+import Recipes from './pages/Recipes';
 
 function App() {
   return (

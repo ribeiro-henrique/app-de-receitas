@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
-import Login from '../components/Login';
+import Login from '../pages/Login';
 
 const loginInp = 'login-submit-btn';
 const passInp = 'password-input';

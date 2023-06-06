@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
+import Header from '../components/Header';
 import { useHeader } from '../context/HeaderContext';
-import Header from './Header';
 
 function Drinks() {
   const { setTitle, setShowSearchIcon } = useHeader();
