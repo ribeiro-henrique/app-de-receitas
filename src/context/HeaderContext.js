@@ -1,19 +1,22 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import React, { createContext, useContext, useMemo, useState } from 'react';
+import profileIcon from '../images/profileIcon.svg';
 
 const HeaderContext = createContext();
 
 export function HeaderProvider({ children }) {
   const [title, setTitle] = useState('');
   const [showSearchIcon, setShowSearchIcon] = useState(true);
-  const profileIcon = 'src/images/profileIcon.svg';
+  const [showSearchBar, setShowSearchBar] = useState(false);
 
   const headerValue = useMemo(() => ({
     title,
     setTitle,
     showSearchIcon,
     setShowSearchIcon,
-    profileIcon }), [title, showSearchIcon]);
+    showSearchBar,
+    setShowSearchBar,
+    profileIcon }), [title, showSearchIcon, showSearchBar]);
 
   return (
     <HeaderContext.Provider value={ headerValue }>
