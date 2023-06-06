@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { useHeader } from '../context/HeaderContext';
 import Header from './Header';
 
-function Recipes() {
+function Drinks() {
   const { setTitle, setShowSearchIcon } = useHeader();
 
   useEffect(() => {
-    setTitle('Meals');
+    setTitle('Drinks');
     setShowSearchIcon(true);
 
     return () => {
@@ -22,4 +22,4 @@ function Recipes() {
   );
 }
 
-export default Recipes;
+export default Drinks;
