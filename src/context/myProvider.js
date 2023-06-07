@@ -1,13 +1,24 @@
-import React from 'react';
-import myContext from './myContext';
+import PropTypes from 'prop-types';
+import React, { useMemo, useState } from 'react';
+import context from './myContext';
 
-function myProvider({ children }) {
-  // const [state, setState] = useState('Olá, mundo!');
+function MyProvider({ children }) {
+  const [foods, setFoods] = useState([]);
+
+  const contextValue = useMemo(() => ({
+    foods,
+    setFoods,
+  }), [foods, setFoods]);
+
   return (
-    <myContext.Provider value={ { state } }>
-      { children }
-    </myContext.Provider>
+    <context.Provider value={ contextValue }>
+      {children}
+    </context.Provider>
   );
 }
 
-export default myProvider;
+MyProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export default MyProvider;
