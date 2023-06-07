@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import context from './myContext';
 
-function myProvider({ children }) {
-  const [foods, setFoods] = useState(null);
+function MyProvider({ children }) {
+  const [foods, setFoods] = useState([]);
 
   const contextValue = {
     foods,
@@ -16,4 +17,11 @@ function myProvider({ children }) {
     </context.Provider>
   );
 }
-export default myProvider;
+
+MyProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+  foods: PropTypes.array.isRequired,
+  setFoods: PropTypes.func.isRequired,
+};
+
+export default MyProvider;
