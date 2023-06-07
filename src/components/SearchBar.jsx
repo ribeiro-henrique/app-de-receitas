@@ -5,6 +5,8 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import { searchByI, searchByL, searchByN } from '../services/FoodApi';
+import { searchByIngredient, searchByName, searchByFirstLetter }
+  from '../services/DrinksApi';
 
 function SearchBar() {
   const [inputValue, setInputValue] = useState('');
@@ -14,13 +16,16 @@ function SearchBar() {
   const handleFetch = () => {
     if (inputValue === 'ingrediente') {
       searchByI(searchValue);
+      searchByIngredient(searchValue);
     }
     if (inputValue === 'nome') {
       searchByN(searchValue);
+      searchByName(searchValue);
     }
     if (inputValue === 'primeira-letra') {
       if (searchValue.length === 1) {
         searchByL(searchValue);
+        searchByFirstLetter(searchValue);
       } else {
         global.alert('Your search must have only 1 (one) character');
       }

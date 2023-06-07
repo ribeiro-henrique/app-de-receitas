@@ -24,9 +24,9 @@ function Profile() {
   const handleClick = (action) => {
     if (action === 'doneRecipes') {
       history.push('/done-recipes');
-    } else if (action === 'favoriteRecipes') {
+    } if (action === 'favoriteRecipes') {
       history.push('/favorite-recipes');
-    } else if (action === 'logout') {
+    } if (action === 'logout') {
       localStorage.clear();
       history.push('/');
     }
