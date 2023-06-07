@@ -1,13 +1,19 @@
-import React from 'react';
-import myContext from './myContext';
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { useState } from 'react';
+import context from './myContext';
 
 function myProvider({ children }) {
-  // const [state, setState] = useState('Olá, mundo!');
+  const [foods, setFoods] = useState(null);
+
+  const contextValue = {
+    foods,
+    setFoods,
+  };
+
   return (
-    <myContext.Provider value={ { state } }>
+    <context.Provider value={ contextValue }>
       { children }
-    </myContext.Provider>
+    </context.Provider>
   );
 }
-
 export default myProvider;

@@ -1,31 +1,47 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
+import { useHistory } from 'react-router-dom';
+import context from '../context/myContext';
+import { drinkFirts, drinkIngre, drinkName } from '../services/DrinksApi';
 import { searchByI, searchByL, searchByN } from '../services/FoodApi';
-import { searchByIngredient, searchByName, searchByFirstLetter }
-  from '../services/DrinksApi';
 
 function SearchBar() {
+  const { foods, setFoods } = useContext(context);
   const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  console.log(searchValue);
+  console.log(foods);
 
-  const handleFetch = () => {
+  const history = useHistory();
+
+  const handleFetch = async () => {
     if (inputValue === 'ingrediente') {
-      searchByI(searchValue);
-      searchByIngredient(searchValue);
+      if (history.path === '/drinks') {
+        const result = await drinkIngre(searchValue);
+        setFoods(result);
+      }
+      const result = searchByI(searchValue);
+      setFoods(result);
     }
     if (inputValue === 'nome') {
-      searchByN(searchValue);
-      searchByName(searchValue);
+      if (history.path === '/drinks') {
+        const result = await drinkName(searchValue);
+        setFoods(result);
+      }
+      const result = searchByN(searchValue);
+      setFoods(result);
     }
     if (inputValue === 'primeira-letra') {
       if (searchValue.length === 1) {
-        searchByL(searchValue);
-        searchByFirstLetter(searchValue);
+        if (history.path === '/drinks') {
+          const result = await drinkFirts(searchValue);
+          setFoods(result);
+        }
+        const result = searchByL(searchValue);
+        setFoods(result);
       } else {
         global.alert('Your search must have only 1 (one) character');
       }
