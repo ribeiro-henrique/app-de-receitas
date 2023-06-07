@@ -46,6 +46,7 @@ describe('Testa o componente Profile', () => {
     act(() => {
       userEvent.click(profileIcon);
     });
+    //
 
     expect(history.location.pathname).toBe('/profile');
     expect(screen.getByTestId(profileEmail)).toBeInTheDocument();
