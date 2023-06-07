@@ -40,7 +40,8 @@ function SearchBar() {
           const result = await drinkFirts(searchValue);
           setFoods(result);
         }
-        const result = searchByL(searchValue);
+        const result = await searchByL(searchValue);
+        console.log(result);
         setFoods(result);
       } else {
         global.alert('Your search must have only 1 (one) character');
