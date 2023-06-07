@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Footer from '../components/Footer';
 import Header from '../components/Header';
 
 import { useHeader } from '../context/HeaderContext';
@@ -19,7 +20,7 @@ function Recipes() {
   return (
     <div>
       <Header />
-
+      <Footer />
     </div>
   );
 }

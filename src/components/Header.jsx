@@ -43,9 +43,6 @@ function Header() {
       {
         showSearchBar && (
           <div>
-            <input
-              data-testid="search-input"
-            />
             <SearchBar />
           </div>
         )
