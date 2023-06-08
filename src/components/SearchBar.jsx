@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -13,39 +13,48 @@ function SearchBar() {
   const { foods, setFoods } = useContext(context);
   const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  console.log(foods);
 
   const history = useHistory();
 
+  // 14 vamos renderizar com base no lenght do foods
+  // o requisito quer as 12 primeiras
+
+  useEffect(() => {
+    if (foods.length === 1) {
+      console.log(foods);
+      const { pathname } = history.location;
+      const id = foods[0].idMeal || foods[0].idDrink;
+      history.push(`${pathname}/${id}`);
+    }
+  }, [foods, history]);
+
   const handleFetch = async () => {
     if (inputValue === 'ingrediente') {
-      if (history.path === '/drinks') {
+      if (history.location.pathname === '/drinks') {
         const result = await drinkIngre(searchValue);
         setFoods(result);
+      } else {
+        const result = await searchByI(searchValue);
+        setFoods(result);
       }
-      const result = searchByI(searchValue);
-      setFoods(result);
-    }
-    if (inputValue === 'nome') {
-      if (history.path === '/drinks') {
+    } else if (inputValue === 'nome') {
+      if (history.location.pathname === '/drinks') {
         const result = await drinkName(searchValue);
         setFoods(result);
+      } else {
+        const result = await searchByN(searchValue);
+        setFoods(result);
       }
-      const result = searchByN(searchValue);
-      setFoods(result);
-    }
-    if (inputValue === 'primeira-letra') {
-      if (searchValue.length === 1) {
-        if (history.path === '/drinks') {
-          const result = await drinkFirts(searchValue);
-          setFoods(result);
-        }
-        const result = await searchByL(searchValue);
-        console.log(result);
+    } else if (inputValue === 'primeira-letra' && searchValue.length === 1) {
+      if (history.location.pathname === '/drinks') {
+        const result = await drinkFirts(searchValue);
         setFoods(result);
       } else {
-        global.alert('Your search must have only 1 (one) character');
+        const result = await searchByL(searchValue);
+        setFoods(result);
       }
+    } else {
+      global.alert('Your search must have only 1 (one) character');
     }
   };
 
@@ -115,6 +124,18 @@ function SearchBar() {
         Buscar
 
       </Button>
+      <div>
+
+        { foods && foods.length > 1 ? (
+          <span>
+            Imagine aqui vários sucos kkk
+          </span>
+        ) : (
+          <span>
+            Opa, nao é maior
+          </span>
+        ) }
+      </div>
     </Form>
   );
 }
