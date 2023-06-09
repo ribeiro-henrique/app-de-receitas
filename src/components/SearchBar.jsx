@@ -1,7 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
+import Image from 'react-bootstrap/Image';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import { useHistory } from 'react-router-dom';
@@ -10,41 +11,59 @@ import { drinkFirts, drinkIngre, drinkName } from '../services/DrinksApi';
 import { searchByI, searchByL, searchByN } from '../services/FoodApi';
 
 function SearchBar() {
+  const DOZE = 12;
   const { foods, setFoods } = useContext(context);
+  console.log(foods);
   const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  console.log(foods);
 
   const history = useHistory();
 
+  // 14 vamos renderizar com base no lenght do foods
+  // o requisito quer as 12 primeiras
+
+  useEffect(() => {
+    if (foods === undefined || foods === null) {
+      global.alert('Sorry, we haven\'t found any recipes for these filters.');
+    }
+  }, [foods]);
+
+  useEffect(() => {
+    if (foods && foods.length === 1) {
+      console.log(foods);
+      const { pathname } = history.location;
+      const id = foods[0].idMeal || foods[0].idDrink;
+      history.push(`${pathname}/${id}`);
+    }
+  }, [foods, history]);
+
   const handleFetch = async () => {
     if (inputValue === 'ingrediente') {
-      if (history.path === '/drinks') {
+      if (history.location.pathname === '/drinks') {
         const result = await drinkIngre(searchValue);
         setFoods(result);
+      } else {
+        const result = await searchByI(searchValue);
+        setFoods(result);
       }
-      const result = searchByI(searchValue);
-      setFoods(result);
-    }
-    if (inputValue === 'nome') {
-      if (history.path === '/drinks') {
+    } else if (inputValue === 'nome') {
+      if (history.location.pathname === '/drinks') {
         const result = await drinkName(searchValue);
         setFoods(result);
+      } else {
+        const result = await searchByN(searchValue);
+        setFoods(result);
       }
-      const result = searchByN(searchValue);
-      setFoods(result);
-    }
-    if (inputValue === 'primeira-letra') {
-      if (searchValue.length === 1) {
-        if (history.path === '/drinks') {
-          const result = await drinkFirts(searchValue);
-          setFoods(result);
-        }
-        const result = searchByL(searchValue);
+    } else if (inputValue === 'primeira-letra' && searchValue.length === 1) {
+      if (history.location.pathname === '/drinks') {
+        const result = await drinkFirts(searchValue);
         setFoods(result);
       } else {
-        global.alert('Your search must have only 1 (one) character');
+        const result = await searchByL(searchValue);
+        setFoods(result);
       }
+    } else {
+      global.alert('Your search must have only 1 (one) character');
     }
   };
 
@@ -114,6 +133,27 @@ function SearchBar() {
         Buscar
 
       </Button>
+      <Row>
+        {foods && foods.length > 1 && (
+          <div>
+            {foods.slice(0, DOZE).map((food, index) => (
+              <Col xs={ 6 } md={ 4 } key={ index } data-testid={ `${index}-recipe-card` }>
+                <Image
+                  src={ history.location.pathname === '/drinks'
+                    ? food.strDrinkThumb : food.strMealThumb }
+                  thumbnail
+                  alt="Recipe"
+                  data-testid={ `${index}-card-img` }
+                />
+                <span data-testid={ `${index}-card-name` }>
+                  {history.location.pathname === '/drinks' ? food.strDrink : food.strMeal}
+                </span>
+              </Col>
+            ))}
+          </div>
+        )}
+      </Row>
+
     </Form>
   );
 }
