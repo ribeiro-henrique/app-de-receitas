@@ -3,6 +3,10 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useHistory } from 'react-router-dom';
 import validator from 'validator';
+import '../styles/Login.css';
+
+const tomateImage = require('../images/tomate.png');
+const logoImage = require('../images/logo.png');
 
 function Login() {
   const [validateEmail, setValidateEmail] = useState('');
@@ -34,44 +38,51 @@ function Login() {
   };
 
   return (
-    <Form>
-      <Form.Group
-        className="mb-3"
-        controlId="formGroupEmail"
-      >
-        <Form.Label>Email address</Form.Label>
-        <Form.Control
-          data-testid="email-input"
-          type="email"
-          placeholder="Enter email"
-          value={ validateEmail }
-          onChange={ handleEmail }
-        />
-      </Form.Group>
-      <Form.Group
-        className="mb-3"
-        controlId="formGroupPassword"
-      >
-        <Form.Label>Password</Form.Label>
-        <Form.Control
-          data-testid="password-input"
-          type="password"
-          placeholder="Password"
-          value={ validatePass }
-          onChange={ handlePass }
-        />
-      </Form.Group>
-      <Button
-        variant="danger"
-        data-testid="login-submit-btn"
-        disabled={ buttonState }
-        onClick={ handleClick }
-      >
-        Login
+    <div className="login-container">
+      <div className="background" />
+      <img className="tomate" src={ tomateImage } alt="Tomate" />
+      <img className="logo" src={ logoImage } alt="Logo Recipes App" />
+      <Form className="login-form">
+        <h1 className="login-title">Login</h1>
+        <Form.Group
+          className="mb-3"
+          controlId="formGroupEmail"
+        >
 
-      </Button>
-      {' '}
-    </Form>
+          <Form.Control
+            data-testid="email-input"
+            type="email"
+            placeholder="Email"
+            value={ validateEmail }
+            onChange={ handleEmail }
+          />
+        </Form.Group>
+        <Form.Group
+          className="mb-3"
+          controlId="formGroupPassword"
+        >
+
+          <Form.Control
+            data-testid="password-input"
+            type="password"
+            placeholder="Password"
+            value={ validatePass }
+            onChange={ handlePass }
+          />
+        </Form.Group>
+        <Button
+          size="lg"
+          variant="danger"
+          data-testid="login-submit-btn"
+          disabled={ buttonState }
+          onClick={ handleClick }
+        >
+          Login
+
+        </Button>
+        {' '}
+      </Form>
+    </div>
   );
 }
 
