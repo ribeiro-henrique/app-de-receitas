@@ -10,6 +10,8 @@ function MyProvider({ children }) {
     setFoods,
   }), [foods, setFoods]);
 
+  // pensei em colocar o global.alert aqui
+
   return (
     <context.Provider value={ contextValue }>
       {children}

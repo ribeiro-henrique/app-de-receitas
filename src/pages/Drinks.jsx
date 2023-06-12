@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import Footer from '../components/Footer';
-import Header from '../components/Header';
 import { useHeader } from '../context/HeaderContext';
+import Recipes from './Recipes';
 
 function Drinks() {
   const { setTitle, setShowSearchIcon } = useHeader();
@@ -18,8 +17,9 @@ function Drinks() {
 
   return (
     <div>
-      <Header />
-      <Footer />
+
+      <Recipes />
+
     </div>
   );
 }
