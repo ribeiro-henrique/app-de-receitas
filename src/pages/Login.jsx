@@ -5,8 +5,8 @@ import { useHistory } from 'react-router-dom';
 import validator from 'validator';
 import '../styles/Login.css';
 
-const tomateImage = require('../images/tomate.png');
-const logoImage = require('../images/logo.png');
+// const tomateImage = require('../images/tomate.png');
+// const logoImage = require('../images/logo.png');
 
 function Login() {
   const [validateEmail, setValidateEmail] = useState('');
@@ -39,9 +39,9 @@ function Login() {
 
   return (
     <div className="login-container">
-      <div className="background" />
+      {/* <div className="background" />
       <img className="tomate" src={ tomateImage } alt="Tomate" />
-      <img className="logo" src={ logoImage } alt="Logo Recipes App" />
+      <img className="logo" src={ logoImage } alt="Logo Recipes App" /> */}
       <Form className="login-form">
         <h1 className="login-title">Login</h1>
         <Form.Group
