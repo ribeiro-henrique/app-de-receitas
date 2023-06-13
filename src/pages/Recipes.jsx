@@ -1,39 +1,29 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import { useHeader } from '../context/HeaderContext';
-import context from '../context/myContext';
 import { allDrinks, allMeals, dCFetch, getCat, mCFetch } from '../services/FetchApi';
-import './Recipes.css';
-
-// tasks necessárias 13/06 - terça:
-// arrumar a quantidade de el que renderiza ao pesquisar no searchBar
-// lançar o global.alert (talvez no provider)
-// criar o arquivo de mock para testar o Recipes
-// verificar os arrays de dependência dos useEffect
 
 export default function Recipes() {
   const { setTitle, setShowSearchIcon } = useHeader();
-  // const [foods, setFoods] = useState([]);
+  const [recipesData, setRecipesData] = useState([]);
   const [category, setCategory] = useState([]);
   const [specificCategory, setSpecificCategory] = useState('');
   const [isFilterActive, setIsFilterActive] = useState(false);
-  const { foods, setFoods } = useContext(context);
-
+  console.log(isFilterActive);
   const maxLength = 12;
   const maxCategory = 5;
   const history = useHistory();
-
   const getRecipes = useCallback(async () => {
     if (history.location.pathname === '/meals') {
       const meals = await allMeals();
       const twelveMeals = meals.meals.slice(0, maxLength);
-      setFoods(twelveMeals || []);
+      setRecipesData(twelveMeals || []);
     } else if (history.location.pathname === '/drinks') {
       const drinks = await allDrinks();
       const twelveDrinks = drinks.drinks.slice(0, maxLength);
-      setFoods(twelveDrinks || []);
+      setRecipesData(twelveDrinks || []);
     }
   }, [history.location.pathname]);
   const fetchCategories = useCallback(async () => {
@@ -73,10 +63,10 @@ export default function Recipes() {
       const categories = await getCat(serverParameter(), categoryName);
       if (history.location.pathname === '/meals') {
         const categoryRecipes = categories.meals.slice(0, maxLength);
-        setFoods(categoryRecipes);
+        setRecipesData(categoryRecipes);
       } else if (history.location.pathname === '/drinks') {
         const categoryRecipes = categories.drinks.slice(0, maxLength);
-        setFoods(categoryRecipes);
+        setRecipesData(categoryRecipes);
       }
     },
     [specificCategory, setSpecificCategory, isFilterActive,
@@ -121,19 +111,9 @@ export default function Recipes() {
       </button>
       {isFilterActive ? (
         <div>
-          {foods.map((e, index) => (
-            <div
-              className="recipe-card"
-              key={ e.idMeal || e.idDrink }
-              data-testid={ `${index}-recipe-card` }
-            >
-              <h2
-                className="card-name"
-                data-testid={ `${index}-card-name` }
-              >
-                {e.strMeal || e.strDrink}
-
-              </h2>
+          {recipesData.map((e, index) => (
+            <div key={ e.idMeal || e.idDrink } data-testid={ `${index}-recipe-card` }>
+              <h2 data-testid={ `${index}-card-name` }>{e.strMeal || e.strDrink}</h2>
               {history.location.pathname === '/meals' ? (
                 <Link to={ `/meals/${e.idMeal}` }>
                   <img
@@ -145,7 +125,6 @@ export default function Recipes() {
               ) : (
                 <Link to={ `/drinks/${e.idDrink}` }>
                   <img
-                    className="card-img"
                     data-testid={ `${index}-card-img` }
                     src={ e.strDrinkThumb }
                     alt={ e.strDrink }
@@ -159,22 +138,11 @@ export default function Recipes() {
         <div>
           {history.location.pathname === '/meals' ? (
             <div>
-              {foods.map((e, index) => (
-                <div
-                  className="recipe-card"
-                  key={ e.idMeal }
-                  data-testid={ `${index}-recipe-card` }
-                >
-                  <h2
-                    className="card-name"
-                    data-testid={ `${index}-card-name` }
-                  >
-                    {e.strMeal}
-
-                  </h2>
+              {recipesData.map((e, index) => (
+                <div key={ e.idMeal } data-testid={ `${index}-recipe-card` }>
+                  <h2 data-testid={ `${index}-card-name` }>{e.strMeal}</h2>
                   <Link to={ `/meals/${e.idMeal}` }>
                     <img
-                      className="card-img"
                       data-testid={ `${index}-card-img` }
                       src={ e.strMealThumb }
                       alt={ e.strMeal }
@@ -185,22 +153,11 @@ export default function Recipes() {
             </div>
           ) : (
             <div>
-              {foods.map((e, index) => (
-                <div
-                  className="recipe-card"
-                  key={ e.idDrink }
-                  data-testid={ `${index}-recipe-card` }
-                >
-                  <h2
-                    className="card-name"
-                    data-testid={ `${index}-card-name` }
-                  >
-                    {e.strDrink}
-
-                  </h2>
+              {recipesData.map((e, index) => (
+                <div key={ e.idDrink } data-testid={ `${index}-recipe-card` }>
+                  <h2 data-testid={ `${index}-card-name` }>{e.strDrink}</h2>
                   <Link to={ `/drinks/${e.idDrink}` }>
                     <img
-                      className="card-img"
                       data-testid={ `${index}-card-img` }
                       src={ e.strDrinkThumb }
                       alt={ e.strDrink }
