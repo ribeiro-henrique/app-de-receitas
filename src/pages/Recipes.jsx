@@ -7,6 +7,12 @@ import context from '../context/myContext';
 import { allDrinks, allMeals, dCFetch, getCat, mCFetch } from '../services/FetchApi';
 import './Recipes.css';
 
+// tasks necessárias 13/06 - terça:
+// arrumar a quantidade de el que renderiza ao pesquisar no searchBar
+// lançar o global.alert (talvez no provider)
+// criar o arquivo de mock para testar o Recipes
+// verificar os arrays de dependência dos useEffect
+
 export default function Recipes() {
   const { setTitle, setShowSearchIcon } = useHeader();
   // const [foods, setFoods] = useState([]);
