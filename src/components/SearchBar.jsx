@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import Image from 'react-bootstrap/Image';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import { useHistory } from 'react-router-dom';
@@ -11,7 +10,6 @@ import { drinkFirts, drinkIngre, drinkName } from '../services/DrinksApi';
 import { searchByI, searchByL, searchByN } from '../services/FoodApi';
 
 function SearchBar() {
-  const DOZE = 12;
   const { foods, setFoods } = useContext(context);
   console.log(foods);
   const [inputValue, setInputValue] = useState('');
@@ -32,7 +30,7 @@ function SearchBar() {
     if (foods && foods.length === 1) {
       console.log(foods);
       const { pathname } = history.location;
-      const id = foods[0].idMeal || foods[0].idDrink;
+      const id = foods[0].idMeal || foods[0].idDrink; // vamos precisar disso
       history.push(`${pathname}/${id}`);
     }
   }, [foods, history]);
@@ -133,26 +131,6 @@ function SearchBar() {
         Buscar
 
       </Button>
-      <Row>
-        {foods && foods.length > 1 && (
-          <div>
-            {foods.slice(0, DOZE).map((food, index) => (
-              <Col xs={ 6 } md={ 4 } key={ index } data-testid={ `${index}-recipe-card` }>
-                <Image
-                  src={ history.location.pathname === '/drinks'
-                    ? food.strDrinkThumb : food.strMealThumb }
-                  thumbnail
-                  alt="Recipe"
-                  data-testid={ `${index}-card-img` }
-                />
-                <span data-testid={ `${index}-card-name` }>
-                  {history.location.pathname === '/drinks' ? food.strDrink : food.strMeal}
-                </span>
-              </Col>
-            ))}
-          </div>
-        )}
-      </Row>
 
     </Form>
   );
