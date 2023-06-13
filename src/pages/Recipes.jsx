@@ -11,32 +11,36 @@ export default function Recipes() {
   const [category, setCategory] = useState([]);
   const [specificCategory, setSpecificCategory] = useState('');
   const [isFilterActive, setIsFilterActive] = useState(false);
-  console.log(isFilterActive);
+
   const maxLength = 12;
   const maxCategory = 5;
+
   const history = useHistory();
+
   const getRecipes = useCallback(async () => {
     if (history.location.pathname === '/meals') {
       const meals = await allMeals();
       const twelveMeals = meals.meals.slice(0, maxLength);
-      setRecipesData(twelveMeals || []);
-    } else if (history.location.pathname === '/drinks') {
+      setRecipesData(twelveMeals);
+    } if (history.location.pathname === '/drinks') {
       const drinks = await allDrinks();
       const twelveDrinks = drinks.drinks.slice(0, maxLength);
-      setRecipesData(twelveDrinks || []);
+      setRecipesData(twelveDrinks);
     }
   }, [history.location.pathname]);
+
   const fetchCategories = useCallback(async () => {
     if (history.location.pathname === '/meals') {
       const categories = await mCFetch();
       const fiveCategories = categories.meals.slice(0, maxCategory);
       setCategory(fiveCategories);
-    } else if (history.location.pathname === '/drinks') {
+    } if (history.location.pathname === '/drinks') {
       const categories = await dCFetch();
       const fiveCategories = categories.drinks.slice(0, maxCategory);
       setCategory(fiveCategories);
     }
   }, [history.location.pathname]);
+
   const serverParameter = useCallback(() => {
     if (history.location.pathname === '/meals') {
       const server = 'themealdb';
@@ -47,10 +51,11 @@ export default function Recipes() {
       return server;
     }
   }, [history.location.pathname]);
+
   const fetchCategory = useCallback(
     async (categoryName) => {
       if (categoryName === specificCategory) {
-        setSpecificCategory('');
+        setSpecificCategory(''); // falta testar a mudança de categoria
         if (isFilterActive) {
           setIsFilterActive(false);
         }
@@ -64,7 +69,7 @@ export default function Recipes() {
       if (history.location.pathname === '/meals') {
         const categoryRecipes = categories.meals.slice(0, maxLength);
         setRecipesData(categoryRecipes);
-      } else if (history.location.pathname === '/drinks') {
+      } if (history.location.pathname === '/drinks') {
         const categoryRecipes = categories.drinks.slice(0, maxLength);
         setRecipesData(categoryRecipes);
       }
@@ -72,6 +77,7 @@ export default function Recipes() {
     [specificCategory, setSpecificCategory, isFilterActive,
       serverParameter, history.location.pathname],
   );
+
   useEffect(() => {
     setTitle('Meals');
     setShowSearchIcon(true);
@@ -80,6 +86,7 @@ export default function Recipes() {
       setShowSearchIcon(false);
     };
   }, [setTitle, setShowSearchIcon]);
+
   useEffect(() => {
     getRecipes();
     fetchCategories();
@@ -89,6 +96,7 @@ export default function Recipes() {
       getRecipes();
     }
   }, [isFilterActive, specificCategory, getRecipes]);
+
   return (
     <div>
       <Header />

@@ -1,58 +1,87 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import Recipes from '../pages/Recipes';
+import drinksCat from '../../cypress/mocks/drinkCategories';
+import foodCategory from '../../cypress/mocks/mealCategories';
+import App from '../App';
+import renderWithRouter from '../helpers/RenderWithRoute';
 
-// usar o mock da pasta cypress, arquivo fetch
-
-describe('Recipes', () => {
+describe('Testes do componente Recipes', () => {
   beforeEach(() => {
-    render(
-      <Router>
-        <Recipes />
-      </Router>,
-    );
+    localStorage.user = {
+      email: 'hesr.ribeiro@gmail.com',
+    };
   });
+  test('Teste de seleção de categoria de refeição', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue(foodCategory),
+    });
+    const { history } = renderWithRouter(<App />, { initialEntries: ['/meals'] });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
+    expect(history.location.pathname).toBe('/meals');
 
-  test('renders category buttons', () => {
-    const categoryButtons = screen.getAllByRole('button', { name: /category-filter/i });
-    expect(categoryButtons.length).toBeGreaterThanOrEqual(1);
+    const beef = screen.getByTestId('Beef-category-filter');
+    userEvent.click(beef);
+    // expect(fetchCategory).toHaveBeenCalledWith('Beef');
+    const torta = screen.getByRole('img', {
+      name: /beef and mustard pie/i,
+    });
+    const corba = screen.getByRole('img', {
+      name: /corba/i,
+    });
+    expect(torta).toBeInTheDocument();
+    expect(corba).not.toBeInTheDocument();
+
+    userEvent.click(beef);
+    expect(torta).not.toBeInTheDocument();
+    expect(corba).toBeInTheDocument();
+
+    expect(history.location.pathname).toBe('/meals');
+    const breakfast = screen.getByTestId('Breakfast-category-filter');
+    userEvent.click(breakfast);
+    expect(history.location.pathname).toBe('/meals');
+    const chicken = screen.getByTestId('Chicken-category-filter');
+    userEvent.click(chicken);
+    expect(history.location.pathname).toBe('/meals');
+    global.fetch.mockClear();
   });
-
-  test('renders "All" button', () => {
-    const allButton = screen.getByTestId('All-category-filter');
-    expect(allButton).toBeInTheDocument();
+  test('Teste de seleção de categoria de bebida', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue(drinksCat),
+    });
+    const { history } = renderWithRouter(<App />, { initialEntries: ['/drinks'] });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
+    expect(history.location.pathname).toBe('/drinks');
+    const ordinary = screen.getByTestId('Ordinary Drink-category-filter');
+    userEvent.click(ordinary);
+    expect(history.location.pathname).toBe('/drinks');
+    const cocktail = screen.getByTestId('Cocktail-category-filter');
+    userEvent.click(cocktail);
+    expect(history.location.pathname).toBe('/drinks');
+    const shake = screen.getByTestId('Shake-category-filter');
+    userEvent.click(shake);
+    expect(history.location.pathname).toBe('/drinks');
+    global.fetch.mockClear();
   });
-
-  test('renders recipe cards', () => {
-    const recipeCards = screen.getAllByTestId(/recipe-card/i);
-    expect(recipeCards.length).toBeGreaterThanOrEqual(1);
-  });
-
-  test('clicking a category button should fetch recipes from that category', async () => {
-    const categoryButton = screen.getByTestId(/category-filter/i);
-    fireEvent.click(categoryButton);
-
-    // Wait for the recipes to be fetched and rendered
-    await screen.findAllByTestId(/recipe-card/i);
-
-    const recipeCards = screen.getAllByTestId(/recipe-card/i);
-    expect(recipeCards.length).toBeGreaterThanOrEqual(1);
-  });
-
-  test('clicking the "All" button should fetch all recipes', async () => {
-    const allButton = screen.getByTestId('All-category-filter');
-    fireEvent.click(allButton);
-
-    // Wait for the recipes to be fetched and rendered
-    await screen.findAllByTestId(/recipe-card/i);
-
-    const recipeCards = screen.getAllByTestId(/recipe-card/i);
-    expect(recipeCards.length).toBeGreaterThanOrEqual(1);
-  });
-
-  test('renders multiple recipe cards when there are more than one food items', () => {
-    const recipeImages = screen.getAllByAltText('Recipe');
-    expect(recipeImages.length).toBeGreaterThanOrEqual(1);
+  test('Teste de seleção da categoria "All" de refeição', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue(foodCategory),
+    });
+    const { history } = renderWithRouter(<App />, { initialEntries: ['/meals'] });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
+    expect(history.location.pathname).toBe('/meals');
+    const allBtn = screen.getByTestId('All-category-filter');
+    userEvent.click(allBtn);
+    expect(history.location.pathname).toBe('/meals');
+    global.fetch.mockClear();
   });
 });
