@@ -1,18 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import { useHeader } from '../context/HeaderContext';
+import context from '../context/myContext';
 import { allDrinks, allMeals, dCFetch, getCat, mCFetch } from '../services/FetchApi';
 import './Recipes.css';
 
 export default function Recipes() {
   const { setTitle, setShowSearchIcon } = useHeader();
-  const [recipesData, setRecipesData] = useState([]);
+  // const [foods, setFoods] = useState([]);
   const [category, setCategory] = useState([]);
   const [specificCategory, setSpecificCategory] = useState('');
   const [isFilterActive, setIsFilterActive] = useState(false);
-  console.log(isFilterActive);
+  const { foods, setFoods } = useContext(context);
 
   const maxLength = 12;
   const maxCategory = 5;
@@ -22,11 +23,11 @@ export default function Recipes() {
     if (history.location.pathname === '/meals') {
       const meals = await allMeals();
       const twelveMeals = meals.meals.slice(0, maxLength);
-      setRecipesData(twelveMeals || []);
+      setFoods(twelveMeals || []);
     } else if (history.location.pathname === '/drinks') {
       const drinks = await allDrinks();
       const twelveDrinks = drinks.drinks.slice(0, maxLength);
-      setRecipesData(twelveDrinks || []);
+      setFoods(twelveDrinks || []);
     }
   }, [history.location.pathname]);
   const fetchCategories = useCallback(async () => {
@@ -66,10 +67,10 @@ export default function Recipes() {
       const categories = await getCat(serverParameter(), categoryName);
       if (history.location.pathname === '/meals') {
         const categoryRecipes = categories.meals.slice(0, maxLength);
-        setRecipesData(categoryRecipes);
+        setFoods(categoryRecipes);
       } else if (history.location.pathname === '/drinks') {
         const categoryRecipes = categories.drinks.slice(0, maxLength);
-        setRecipesData(categoryRecipes);
+        setFoods(categoryRecipes);
       }
     },
     [specificCategory, setSpecificCategory, isFilterActive,
@@ -114,7 +115,7 @@ export default function Recipes() {
       </button>
       {isFilterActive ? (
         <div>
-          {recipesData.map((e, index) => (
+          {foods.map((e, index) => (
             <div
               className="recipe-card"
               key={ e.idMeal || e.idDrink }
@@ -152,7 +153,7 @@ export default function Recipes() {
         <div>
           {history.location.pathname === '/meals' ? (
             <div>
-              {recipesData.map((e, index) => (
+              {foods.map((e, index) => (
                 <div
                   className="recipe-card"
                   key={ e.idMeal }
@@ -178,7 +179,7 @@ export default function Recipes() {
             </div>
           ) : (
             <div>
-              {recipesData.map((e, index) => (
+              {foods.map((e, index) => (
                 <div
                   className="recipe-card"
                   key={ e.idDrink }
