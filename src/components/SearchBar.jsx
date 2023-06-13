@@ -9,6 +9,8 @@ import context from '../context/myContext';
 import { drinkFirts, drinkIngre, drinkName } from '../services/DrinksApi';
 import { searchByI, searchByL, searchByN } from '../services/FoodApi';
 
+const maxLenght = 12;
+
 function SearchBar() {
   const { foods, setFoods } = useContext(context);
   console.log(foods);
@@ -21,17 +23,18 @@ function SearchBar() {
   // o requisito quer as 12 primeiras
 
   useEffect(() => {
-    if (foods === undefined || foods === null) {
+    if (!foods || foods.length === 0) {
       global.alert('Sorry, we haven\'t found any recipes for these filters.');
-    }
-  }, [foods]);
-
-  useEffect(() => {
-    if (foods && foods.length === 1) {
-      console.log(foods);
+    } else {
       const { pathname } = history.location;
-      const id = foods[0].idMeal || foods[0].idDrink; // vamos precisar disso
-      history.push(`${pathname}/${id}`);
+      const id = foods[0]?.idMeal || foods[0]?.idDrink; // vamos precisar disso
+      if (foods && foods.length === 1 && !pathname.includes(id)) {
+        console.log(pathname, 'Oi eu to aqui');
+        history.push(`${pathname}/${id}`);
+      }
+      if (foods && foods.length > maxLenght) {
+        setFoods((prev) => prev.slice(0, maxLenght));
+      }
     }
   }, [foods, history]);
 

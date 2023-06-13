@@ -4,13 +4,16 @@ import Footer from '../components/Footer';
 import Header from '../components/Header';
 import { useHeader } from '../context/HeaderContext';
 import { allDrinks, allMeals, dCFetch, getCat, mCFetch } from '../services/FetchApi';
+import './Recipes.css';
 
 export default function Recipes() {
   const { setTitle, setShowSearchIcon } = useHeader();
+  // const [recipesData, setRecipesData] = useState([]);
   const [recipesData, setRecipesData] = useState([]);
   const [category, setCategory] = useState([]);
   const [specificCategory, setSpecificCategory] = useState('');
   const [isFilterActive, setIsFilterActive] = useState(false);
+  // const { recipesData, setRecipesData } = useContext(context);
 
   const maxLength = 12;
   const maxCategory = 5;
@@ -97,6 +100,18 @@ export default function Recipes() {
     }
   }, [isFilterActive, specificCategory, getRecipes]);
 
+  const handleLinkClick = (id) => {
+    const route = history.location.pathname;
+
+    if (route === '/meals') {
+      // Salva o ID de comida no localStorage
+      localStorage.setItem('mealId', id);
+    } else if (route === '/drinks') {
+      // Salva o ID de bebida no localStorage
+      localStorage.setItem('drinkId', id);
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -146,10 +161,13 @@ export default function Recipes() {
         <div>
           {history.location.pathname === '/meals' ? (
             <div>
-              {recipesData.map((e, index) => (
+              {recipesData && recipesData.map((e, index) => (
                 <div key={ e.idMeal } data-testid={ `${index}-recipe-card` }>
                   <h2 data-testid={ `${index}-card-name` }>{e.strMeal}</h2>
-                  <Link to={ `/meals/${e.idMeal}` }>
+                  <Link
+                    to={ `/meals/${e.idMeal}` }
+                    onClick={ () => handleLinkClick(e.idMeal) }
+                  >
                     <img
                       data-testid={ `${index}-card-img` }
                       src={ e.strMealThumb }
@@ -161,10 +179,13 @@ export default function Recipes() {
             </div>
           ) : (
             <div>
-              {recipesData.map((e, index) => (
+              {recipesData && recipesData.map((e, index) => (
                 <div key={ e.idDrink } data-testid={ `${index}-recipe-card` }>
                   <h2 data-testid={ `${index}-card-name` }>{e.strDrink}</h2>
-                  <Link to={ `/drinks/${e.idDrink}` }>
+                  <Link
+                    to={ `/drinks/${e.idDrink}` }
+                    onClick={ () => handleLinkClick(e.idDrink) }
+                  >
                     <img
                       data-testid={ `${index}-card-img` }
                       src={ e.strDrinkThumb }
