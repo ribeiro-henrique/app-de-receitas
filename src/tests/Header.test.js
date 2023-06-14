@@ -1,51 +1,76 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import App from '../App';
+import Header from '../components/Header';
 import renderWithRouter from '../helpers/RenderWithRoute';
 
+const idPageTitle = 'page-title';
+const tituloDaPagina = 'Comidas';
+const idIconeProfile = 'profile-top-btn';
+const idIconePesquisa = 'search-top-btn';
 describe('Header', () => {
-  test('Exibe o título correto na rota /meals', () => {
-    const { history } = renderWithRouter(<App />, { initialEntries: ['/meals'] });
-    expect(screen.getByText(/meals/i)).toBeInTheDocument();
+  it('renders the correct title without icons', () => {
+    renderWithRouter(<Header title="Comidas" />);
 
-    const profileIcon = screen.getByTestId('profile-top-btn');
-    userEvent.click(profileIcon);
+    const pageTitle = screen.getByTestId(idPageTitle);
+    expect(pageTitle).toBeVisible();
+    expect(pageTitle).toHaveTextContent(tituloDaPagina);
 
-    expect(history.location.pathname).toBe('/profile');
+    const avatarEl = screen.queryByTestId(idIconeProfile);
+    expect(avatarEl).toBeNull();
+
+    const searchEl = screen.queryByTestId(idIconePesquisa);
+    expect(searchEl).toBeNull();
   });
 
-  test('Search Btn', () => {
-    renderWithRouter(<App />, { initialEntries: ['/meals'] });
-    expect(screen.getByText(/meals/i)).toBeInTheDocument();
+  it('renders the correct title with iconeProfile', () => {
+    renderWithRouter(<Header title="Comidas" iconeProfile />);
 
-    const searchIcon = screen.getByTestId('search-top-btn');
-    userEvent.click(searchIcon);
+    const pageTitle = screen.getByTestId(idPageTitle);
+    expect(pageTitle).toBeVisible();
+    expect(pageTitle).toHaveTextContent(tituloDaPagina);
 
-    const searchBar = screen.getByTestId('search-input');
-    expect(searchBar).toBeInTheDocument();
+    const avatarEl = screen.queryByTestId(idIconeProfile);
+    expect(avatarEl).toBeInTheDocument();
 
-    userEvent.click(searchIcon);
-    expect(searchBar).not.toBeInTheDocument();
+    const searchEl = screen.queryByTestId(idIconePesquisa);
+    expect(searchEl).toBeNull();
   });
 
-  test('Exibe o título correto na rota /drinks', () => {
-    renderWithRouter(<App />, { initialEntries: ['/drinks'] });
-    expect(screen.getByText(/drinks/i)).toBeInTheDocument();
+  it('renders the correct title with searchProfile', () => {
+    renderWithRouter(<Header title="Comidas" iconeSearch />);
+
+    const pageTitle = screen.getByTestId(idPageTitle);
+    expect(pageTitle).toBeVisible();
+    expect(pageTitle).toHaveTextContent(tituloDaPagina);
+
+    const avatarEl = screen.queryByTestId(idIconeProfile);
+    expect(avatarEl).toBeNull();
+
+    const searchEl = screen.queryByTestId(idIconePesquisa);
+    expect(searchEl).toBeInTheDocument();
   });
 
-  test('Exibe o título correto na rota /profile', () => {
-    renderWithRouter(<App />, { initialEntries: ['/profile'] });
-    expect(screen.getByText(/profile/i)).toBeInTheDocument();
-  });
+  it('Shows the search input when the search icon is clicked', () => {
+    renderWithRouter(<Header title="Comidas" iconeSearch />);
 
-  test('Exibe o título correto na rota /done-recipes', () => {
-    renderWithRouter(<App />, { initialEntries: ['/done-recipes'] });
-    expect(screen.getByText(/done recipes/i)).toBeInTheDocument();
-  });
+    const botaoPesquisar = screen.queryByTestId(idIconePesquisa);
+    expect(botaoPesquisar).toBeInTheDocument();
 
-  // test('Exibe o título correto na rota /favorite-recipes', () => {
-  //   renderWithRouter(<App />, { initialEntries: [' /favorite-recipes'] });
-  //   expect(screen.getByText(/favorite recipes/i)).toBeInTheDocument();
-  // });
+    const SEARH_INPUT = 'search-input';
+    {
+      const searchInput = screen.queryByTestId(SEARH_INPUT);
+      expect(searchInput).toBeNull();
+    }
+    {
+      userEvent.click(botaoPesquisar);
+      const searchInput = screen.queryByTestId(SEARH_INPUT);
+      expect(searchInput).toBeInTheDocument();
+    }
+    {
+      userEvent.click(botaoPesquisar);
+      const searchInput = screen.queryByTestId(SEARH_INPUT);
+      expect(searchInput).toBeNull();
+    }
+  });
 });

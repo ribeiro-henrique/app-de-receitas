@@ -1,35 +1,55 @@
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useHeader } from '../context/HeaderContext';
+import React, { useContext, useState } from 'react';
+import Header from '../components/Header';
+import RecipeCard from '../components/RecipeCard';
+import Context from '../context/MyContext';
 
 function FavoriteRecipes() {
-  const history = useHistory();
-  const { title, setTitle, setShowSearchIcon, profileIcon } = useHeader();
+  const { favorites } = useContext(Context);
+  const [filterType, setFilterType] = useState('');
 
-  useEffect(() => {
-    setTitle('Favorite Recipes');
-    setShowSearchIcon(true);
-
-    return () => {
-      setTitle('');
-      setShowSearchIcon(false);
-    };
-  }, [setTitle, setShowSearchIcon]);
-
-  const handleProfileClick = () => {
-    history.push('/profile'); // Redireciona para a rota de perfil
+  const handleFilter = (type) => {
+    setFilterType(type);
   };
 
+  const filteredRecipes = favorites.filter((recipe) => (filterType
+    ? recipe.type?.startsWith(filterType) : true));
+
   return (
-    <div>
-      <button
-        onClick={ handleProfileClick }
-      >
-        <img src={ profileIcon } alt="profile icon" data-testid="profile-top-btn" />
+    <>
+      <Header title="Favorite Recipes" iconeProfile />
+
+      <button onClick={ () => handleFilter('') } data-testid="filter-by-all-btn">
+        All
       </button>
-      <h1 data-testid="page-title">{title}</h1>
-    </div>
+
+      <button onClick={ () => handleFilter('meal') } data-testid="filter-by-meal-btn">
+        Meals
+      </button>
+
+      <button onClick={ () => handleFilter('drink') } data-testid="filter-by-drink-btn">
+        Drinks
+      </button>
+
+      {filteredRecipes.length > 0 ? (
+        filteredRecipes.map((favorite) => (
+          <RecipeCard
+            key={ favorite.id }
+            recipe={ favorite }
+            image={ favorite.image }
+            name={ favorite.name }
+            date={ favorite.doneDate }
+            tags={ favorite.tags }
+            type={ favorite.type }
+            id={ favorite.id }
+            categoria={ `${favorite.nationality}
+            - ${favorite.category} - ${favorite.alcoholicOrNot}` }
+          />
+        ))
+      ) : (
+        <p>No recipes found.</p>
+      )}
+    </>
   );
 }
 
-export default FavoriteRecipes;
+export default React.memo(FavoriteRecipes);
