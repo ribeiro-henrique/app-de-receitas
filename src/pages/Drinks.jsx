@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHeader } from '../context/HeaderContext';
+
 import Recipes from './Recipes';
 
 function Drinks() {

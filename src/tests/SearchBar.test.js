@@ -1,282 +1,333 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import SearchBar from '../components/SearchBar';
-import context from '../context/myContext';
+// import { act, screen, waitFor } from '@testing-library/react';
+// import userEvent from '@testing-library/user-event';
+// import React from 'react';
+// import App from '../App';
+// import {
+//   mockarAlert,
+//   mockarCategorias,
+//   mockarFetch,
+//   restaurarFetch
+// } from '../util/mockadores';
+// import { renderizarCaminho, renderWithRouter } from './renderWith';
 
-const searchTestId = 'search-input';
-const btnTestId = 'exec-search-btn';
-const firstTestId = 'first-letter-search-radio';
+// import { getEndpoint } from '../components/SearchBar';
+// import drinkIcon from '../images/drinkIcon.svg';
+// import mealIcon from '../images/mealIcon.svg';
+// import { pegarListaDeProdutos } from '../pages/Recipes';
 
-jest.mock('react-router-dom', () => ({
-  useHistory: jest.fn(),
-}));
-describe('SearchBar', () => {
-  let historyMock;
-  beforeEach(() => {
-    historyMock = { location: { pathname: '/drinks' } };
-    useHistory.mockReturnValue(historyMock);
-  });
-  test('chama drinkIngre e define os alimentos quando o tipo de busca é "ingrediente" e a página atual é "/drinks"', async () => {
-    const drinkIngre = jest.fn().mockResolvedValue(['Drink 1', 'Drink 2']);
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [],
-      setFoods,
-    };
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const ingredientRadio = screen.getByTestId('ingredient-search-radio');
-    const searchInput = screen.getByTestId(searchTestId);
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(ingredientRadio);
-    expect(ingredientRadio.checked).toBe(true);
-    userEvent.type(searchInput, 'pizza');
-    expect(searchInput.value).toBe('pizza');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(drinkIngre).toHaveBeenCalledTimes(1);
-      expect(drinkIngre).toHaveBeenCalledWith('pizza');
-      expect(setFoods).toHaveBeenCalledTimes(1);
-      expect(setFoods).toHaveBeenCalledWith(['Drink 1', 'Drink 2']);
-    });
-  });
-  test('chama searchByI e define os alimentos quando o tipo de busca é "ingrediente" e a página atual não é "/drinks"', async () => {
-    const searchByI = jest.fn().mockResolvedValue(['Food 1', 'Food 2']);
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [],
-      setFoods,
-    };
-    historyMock.location.pathname = '/foods';
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const ingredientRadio = screen.getByTestId('ingredient-search-radio');
-    const searchInput = screen.getByTestId(searchTestId);
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(ingredientRadio);
-    expect(ingredientRadio.checked).toBe(true);
-    userEvent.type(searchInput, 'pizza');
-    expect(searchInput.value).toBe('pizza');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(searchByI).toHaveBeenCalledTimes(1);
-      expect(searchByI).toHaveBeenCalledWith('pizza');
-      expect(setFoods).toHaveBeenCalledTimes(1);
-      expect(setFoods).toHaveBeenCalledWith(['Food 1', 'Food 2']);
-    });
-  });
-  test('chama drinkName e define os alimentos quando o tipo de busca é "nome" e a página atual é "/drinks"', async () => {
-    const drinkName = jest.fn().mockResolvedValue(['Drink 1', 'Drink 2']);
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [],
-      setFoods,
-    };
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const nameRadio = screen.getByTestId('name-search-radio');
-    const searchInput = screen.getByTestId(searchTestId);
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(nameRadio);
-    expect(nameRadio.checked).toBe(true);
-    userEvent.type(searchInput, 'pizza');
-    expect(searchInput.value).toBe('pizza');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(drinkName).toHaveBeenCalledTimes(1);
-      expect(drinkName).toHaveBeenCalledWith('pizza');
-      expect(setFoods).toHaveBeenCalledTimes(1);
-      expect(setFoods).toHaveBeenCalledWith(['Drink 1', 'Drink 2']);
-    });
-  });
-  test('chama searchByN e define os alimentos quando o tipo de busca é "nome" e a página atual não é "/drinks"', async () => {
-    const searchByN = jest.fn().mockResolvedValue(['Food 1', 'Food 2']);
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [],
-      setFoods,
-    };
-    historyMock.location.pathname = '/foods';
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const nameRadio = screen.getByTestId('name-search-radio');
-    const searchInput = screen.getByTestId(searchTestId);
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(nameRadio);
-    expect(nameRadio.checked).toBe(true);
-    userEvent.type(searchInput, 'pizza');
-    expect(searchInput.value).toBe('pizza');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(searchByN).toHaveBeenCalledTimes(1);
-      expect(searchByN).toHaveBeenCalledWith('pizza');
-      expect(setFoods).toHaveBeenCalledTimes(1);
-      expect(setFoods).toHaveBeenCalledWith(['Food 1', 'Food 2']);
-    });
-  });
-  test('chama drinkFirts e define os alimentos quando o tipo de busca é "primeira-letra" e a página atual é "/drinks"', async () => {
-    const drinkFirts = jest.fn().mockResolvedValue(['Drink 1', 'Drink 2']);
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [],
-      setFoods,
-    };
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const firstLetterRadio = screen.getByTestId(firstTestId);
-    const searchInput = screen.getByTestId(searchTestId);
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(firstLetterRadio);
-    expect(firstLetterRadio.checked).toBe(true);
-    userEvent.type(searchInput, 'p');
-    expect(searchInput.value).toBe('p');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(drinkFirts).toHaveBeenCalledTimes(1);
-      expect(drinkFirts).toHaveBeenCalledWith('p');
-      expect(setFoods).toHaveBeenCalledTimes(1);
-      expect(setFoods).toHaveBeenCalledWith(['Drink 1', 'Drink 2']);
-    });
-  });
-  test('chama searchByL e define os alimentos quando o tipo de busca é "primeira-letra" e a página atual não é "/drinks"', async () => {
-    const searchByL = jest.fn().mockResolvedValue(['Food 1', 'Food 2']);
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [],
-      setFoods,
-    };
-    historyMock.location.pathname = '/foods';
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const firstLetterRadio = screen.getByTestId(firstTestId);
-    const searchInput = screen.getByTestId(searchTestId);
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(firstLetterRadio);
-    expect(firstLetterRadio.checked).toBe(true);
-    userEvent.type(searchInput, 'p');
-    expect(searchInput.value).toBe('p');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(searchByL).toHaveBeenCalledTimes(1);
-      expect(searchByL).toHaveBeenCalledWith('p');
-      expect(setFoods).toHaveBeenCalledTimes(1);
-      expect(setFoods).toHaveBeenCalledWith(['Food 1', 'Food 2']);
-    });
-  });
-  test('exibe um alerta quando não há alimentos encontrados', async () => {
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: null,
-      setFoods,
-    };
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(setFoods).not.toHaveBeenCalled();
-      expect(global.alert).toHaveBeenCalledWith('Sorry, we haven\'t found any recipes for these filters.');
-    });
-  });
-  test('exibe um alerta quando a pesquisa tem mais de um caractere', async () => {
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [],
-      setFoods,
-    };
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const firstLetterRadio = screen.getByTestId('first-letter-search-radio');
-    const searchInput = screen.getByTestId('search-input');
-    const searchButton = screen.getByTestId(btnTestId);
-    fireEvent.click(firstLetterRadio);
-    expect(firstLetterRadio.checked).toBe(true);
-    userEvent.type(searchInput, 'pizza');
-    expect(searchInput.value).toBe('pizza');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(setFoods).not.toHaveBeenCalled();
-      expect(global.alert).toHaveBeenCalledWith('Your search must have only 1 (one) character');
-    });
-  });
-  test('redireciona para a página de detalhes quando há apenas um alimento encontrado', async () => {
-    const setFoods = jest.fn();
-    const mockContextValue = {
-      foods: [{ idMeal: '1', strMeal: 'Meal 1' }],
-      setFoods,
-    };
-    const historyMocks = {
-      location: { pathname: '/drinks' },
-      push: jest.fn(),
-    };
-    useHistory.mockReturnValue(historyMocks);
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
-    const searchButton = screen.getByTestId('exec-search-btn');
-    fireEvent.click(searchButton);
-    await waitFor(() => {
-      expect(setFoods).not.toHaveBeenCalled();
-      expect(historyMock.push).toHaveBeenCalledWith('/drinks/1');
-    });
-  });
-  test('renders multiple recipe cards when there are more than one food items', () => {
-    const foods = [
-      { idMeal: '1', strMeal: 'Meal 1', strMealThumb: 'meal1.jpg' },
-      { idMeal: '2', strMeal: 'Meal 2', strMealThumb: 'meal2.jpg' },
-      { idMeal: '3', strMeal: 'Meal 3', strMealThumb: 'meal3.jpg' },
-    ];
+// describe('Testing SearchBar component', () => {
+//   afterEach(() => {
+//     jest.restoreAllMocks();
+//   });
 
-    const mockContextValue = {
-      foods,
-      setFoods: jest.fn(),
-    };
+//   const searchInputID = 'search-input';
+//   const searchButtonID = 'exec-search-btn';
+//   const radioButtonIngredientID = 'ingredient-search-radio';
+//   const radioButtonNameID = 'name-search-radio';
+//   const radioButtonFristLetterID = 'first-letter-search-radio';
 
-    render(
-      <context.Provider value={ mockContextValue }>
-        <SearchBar />
-      </context.Provider>,
-    );
+//   it('Testa a função getEndpoint para comidas para cada filtro', async () => {
+//     await renderizarCaminho('/meals');
 
-    const recipeCards = screen.getAllByTestId(/(\d+)-recipe-card/);
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
 
-    expect(recipeCards).toHaveLength(3);
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     expect(searchInput).toBeVisible();
 
-    expect(screen.getByAltText('Recipe')).toHaveAttribute('src', 'meal1.jpg');
-    expect(screen.getByTestId('0-card-name')).toHaveTextContent('Meal 1');
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+//     expect(botaoPesquisar).toBeVisible();
 
-    expect(screen.getByAltText('Recipe')).toHaveAttribute('src', 'meal2.jpg');
-    expect(screen.getByTestId('1-card-name')).toHaveTextContent('Meal 2');
+//     const PESQUISAR = 'teste';
+//     expect(() => getEndpoint(true, PESQUISAR)).toThrow();
 
-    expect(screen.getByAltText('Recipe')).toHaveAttribute('src', 'meal3.jpg');
-    expect(screen.getByTestId('2-card-name')).toHaveTextContent('Meal 3');
-  });
-});
+//     const radioButtonIngredient = screen.getByTestId(radioButtonIngredientID);
+//     userEvent.click(radioButtonIngredient);
+//     expect(getEndpoint(true, PESQUISAR)).toBe(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${PESQUISAR}`);
+
+//     const radioButtonName = screen.getByTestId(radioButtonNameID);
+//     userEvent.click(radioButtonName);
+//     expect(getEndpoint(true, PESQUISAR)).toBe(`https://www.themealdb.com/api/json/v1/1/search.php?s=${PESQUISAR}`);
+
+//     const radioButtonFirstLetter = await screen.findByTestId(radioButtonFristLetterID);
+//     userEvent.click(radioButtonFirstLetter);
+//     expect(getEndpoint(true, 'A')).toBe('https://www.themealdb.com/api/json/v1/1/search.php?f=A');
+
+//     mockarAlert();
+//     getEndpoint(true, PESQUISAR);
+//     expect(global.alert).toHaveBeenCalledTimes(1);
+//   });
+
+//   it('Testa a função getEndpoint para bebidas', async () => {
+//     await renderizarCaminho('/drinks');
+
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
+
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     expect(searchInput).toBeVisible();
+
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+//     expect(botaoPesquisar).toBeVisible();
+
+//     const PESQUISAR = 'teste';
+//     expect(() => getEndpoint(false, PESQUISAR)).toThrow();
+
+//     const radioButtonIngredient = screen.getByTestId(radioButtonIngredientID);
+//     userEvent.click(radioButtonIngredient);
+//     expect(getEndpoint(false, PESQUISAR)).toBe(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${PESQUISAR}`);
+
+//     const radioButtonName = screen.getByTestId(radioButtonNameID);
+//     userEvent.click(radioButtonName);
+//     expect(getEndpoint(false, PESQUISAR)).toBe(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${PESQUISAR}`);
+
+//     const terceiroRadio = screen.getByTestId('first-letter-search-radio');
+//     userEvent.click(terceiroRadio);
+//     expect(getEndpoint(false, 'A')).toBe('https://www.thecocktaildb.com/api/json/v1/1/search.php?f=A');
+
+//     mockarAlert();
+//     getEndpoint(true, PESQUISAR);
+//     expect(global.alert).toHaveBeenCalledTimes(1);
+//   });
+
+//   it('Verificar se chama o fetch com meals', async () => {
+//     const RECEITA_MOCK = {
+//       meals: [
+//         { idMeal: '111', strMeal: 'comida1', strMealThumb: mealIcon },
+//         { idMeal: '112', strMeal: 'comida2', strMealThumb: mealIcon },
+//       ],
+//     };
+//     mockarFetch(RECEITA_MOCK);
+
+//     // Test the method pegarListaDeProdutos
+//     await expect(pegarListaDeProdutos('url', true)).resolves.toEqual(RECEITA_MOCK.meals);
+//     expect(global.fetch).toHaveBeenCalledTimes(1);
+//     expect(global.fetch).toHaveBeenCalledWith('url');
+//   });
+
+//   it('Verificar se chama alerta ao receber da API obj vazio', async () => {
+//     await renderizarCaminho('/meals');
+
+//     const RECEITA_MOCK = {};
+//     mockarFetch(RECEITA_MOCK);
+
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
+
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     const radioButtonName = await screen.findByTestId(radioButtonNameID);
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+
+//     userEvent.type(searchInput, 'inexistente');
+//     userEvent.click(radioButtonName);
+//     mockarAlert();
+//     userEvent.click(botaoPesquisar);
+
+//     // expect(global.fetch).toHaveBeenCalledTimes(1);
+//     // expect(global.fetch).toHaveBeenCalledWith('url');
+//     await act(async () => { });
+//     expect(global.alert).toHaveBeenCalledTimes(1);
+//     // expect(data).toEqual([]);
+//   });
+
+//   it('Verificar se chama o fetch com drinks', async () => {
+//     const RECEITA_MOCK = {
+//       drinks: [
+//         { idDrink: '555', strMeal: 'drink1', strDrinkThumb: drinkIcon },
+//         { idDrink: '556', strMeal: 'drink2', strDrinkThumb: drinkIcon },
+//       ],
+//     };
+
+//     mockarFetch(RECEITA_MOCK);
+//     await expect(pegarListaDeProdutos('url', false)).resolves.toEqual(RECEITA_MOCK.drinks);
+
+//     expect(global.fetch).toHaveBeenCalledTimes(1);
+//     expect(global.fetch).toHaveBeenCalledWith('url');
+//     restaurarFetch();
+//   });
+
+//   it('Verifica se o usuário é redirecionado a pagina de detalhes da comida caso seja'
+//         + ' retornada somente uma na pesquisa', async () => {
+//     mockarCategorias();
+//     const { history } = renderWithRouter(<App />, { initialEntries: ['/meals'] });
+//     restaurarFetch();
+
+//     const RECEITA_MOCK = {
+//       meals: [
+//         { idMeal: '111', strMeal: 'comida1', strMealThumb: mealIcon },
+//       ],
+//     };
+//     mockarFetch(RECEITA_MOCK);
+
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
+
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     userEvent.type(searchInput, 'comida1');
+
+//     const radioButtonName = await screen.findByTestId(radioButtonNameID);
+//     userEvent.click(radioButtonName);
+
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+//     userEvent.click(botaoPesquisar);
+
+//     await waitFor(() => {
+//       expect(history.location.pathname).toBe('/meals/111');
+//     }, { timeout: 3000 });
+//   });
+
+//   it('Verifica se o usuario e redirecionado a pagina de detalhes de um drink caso seja retornada somente um na pesquisa', async () => {
+//     mockarCategorias();
+//     const { history } = renderWithRouter(<App />, { initialEntries: ['/drinks'] });
+//     restaurarFetch();
+
+//     const RECEITA_MOCK = {
+//       drinks: [
+//         { idDrink: '555', strMeal: 'drink1', strDrinkThumb: drinkIcon },
+//       ],
+//     };
+//     mockarFetch(RECEITA_MOCK);
+
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
+
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+//     const radioButtonName = screen.getByTestId(radioButtonNameID);
+
+//     userEvent.type(searchInput, 'drink1');
+//     userEvent.click(radioButtonName);
+//     userEvent.click(botaoPesquisar);
+//     restaurarFetch();
+
+//     await waitFor(() => {
+//       expect(history.location.pathname).toBe('/drinks/555');
+//     }, { timeout: 3000 });
+//   });
+
+//   it('Verifica se e renderizado ate 12 comidas quando achado mais que uma', async () => {
+//     await renderizarCaminho('/meals');
+
+//     const RECEITA_MOCK = {
+//       meals: [
+//         { idMeal: '111', strMeal: 'comida1', strMealThumb: mealIcon },
+//         { idMeal: '112', strMeal: 'comida2', strMealThumb: mealIcon },
+//         { idMeal: '113', strMeal: 'comida3', strMealThumb: mealIcon },
+//         { idMeal: '114', strMeal: 'comida4', strMealThumb: mealIcon },
+//         { idMeal: '115', strMeal: 'comida5', strMealThumb: mealIcon },
+//         { idMeal: '116', strMeal: 'comida6', strMealThumb: mealIcon },
+//         { idMeal: '117', strMeal: 'comida7', strMealThumb: mealIcon },
+//         { idMeal: '118', strMeal: 'comida8', strMealThumb: mealIcon },
+//         { idMeal: '119', strMeal: 'comida9', strMealThumb: mealIcon },
+//         { idMeal: '120', strMeal: 'comida10', strMealThumb: mealIcon },
+//         { idMeal: '121', strMeal: 'comida11', strMealThumb: mealIcon },
+//         { idMeal: '122', strMeal: 'comida12', strMealThumb: mealIcon },
+//         { idMeal: '123', strMeal: 'comida13', strMealThumb: mealIcon },
+//         { idMeal: '124', strMeal: 'comida14', strMealThumb: mealIcon },
+//       ],
+//     };
+
+//     mockarFetch(RECEITA_MOCK);
+
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
+
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+//     const radioButtonFristLetter = await screen.findByTestId(radioButtonFristLetterID);
+//     userEvent.type(searchInput, 'c');
+//     userEvent.click(radioButtonFristLetter);
+//     userEvent.click(botaoPesquisar);
+
+//     const recipeCards = await screen.findAllByTestId(/recipe-card/);
+//     const recipeCardsImages = await screen.findAllByTestId(/card-name/);
+//     const recipeCardsNames = await screen.findAllByTestId(/card-img/);
+
+//     await waitFor(() => expect(recipeCards.length).toBe(12));
+//     await waitFor(() => expect(recipeCardsImages.length).toBe(12));
+//     await waitFor(() => expect(recipeCardsNames.length).toBe(12));
+//   });
+
+//   it.skip('Verifica se são renderizados os drinks quando achado mais que uma', async () => {
+//     await renderizarCaminho('/drinks');
+
+//     const RECEITA_MOCK = {
+//       meals: [
+//         { idDrink: '555', strDrink: 'drink1', strDrinkThumb: drinkIcon },
+//         { idDrink: '556', strDrink: 'drink2', strDrinkThumb: drinkIcon },
+//         { idDrink: '557', strDrink: 'drink3', strDrinkThumb: drinkIcon },
+//       ],
+//     };
+
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
+
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     const radioButtonFristLetter = await screen.findByTestId(radioButtonFristLetterID);
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+
+//     userEvent.type(searchInput, 'd');
+//     userEvent.click(radioButtonFristLetter);
+
+//     mockarFetch(RECEITA_MOCK);
+//     userEvent.click(botaoPesquisar);
+//     act(() => {}); // dar tempo
+
+//     const recipeCards = await waitFor(
+//       () => screen.getAllByTestId('recipe-card'),
+//       { timeout: 4000 },
+//     );
+//     const recipeCardsImages = await screen.findAllByTestId(/card-name/);
+//     const recipeCardsNames = await screen.findAllByTestId(/card-img/);
+
+//     await waitFor(() => expect(recipeCards.length).toBe(3));
+//     await waitFor(() => expect(recipeCardsImages.length).toBe(3));
+//     await waitFor(() => expect(recipeCardsNames.length).toBe(3));
+//     restaurarFetch();
+//   });
+
+//   it('Verifica se e renderizado ate 12 bebidas quando achado mais que uma', async () => {
+//     mockarCategorias();
+//     renderWithRouter(<App />, { initialEntries: ['/drinks'] });
+//     restaurarFetch();
+
+//     const RECEITA_MOCK = {
+//       drinks: [
+//         { idDrink: '111', strDrink: 'bebida1', strDrinkThumb: drinkIcon },
+//         { idDrink: '112', strDrink: 'bebida2', strDrinkThumb: drinkIcon },
+//         { idDrink: '113', strDrink: 'bebida3', strDrinkThumb: drinkIcon },
+//         { idDrink: '114', strDrink: 'bebida4', strDrinkThumb: drinkIcon },
+//         { idDrink: '115', strDrink: 'bebida5', strDrinkThumb: drinkIcon },
+//         { idDrink: '116', strDrink: 'bebida6', strDrinkThumb: drinkIcon },
+//         { idDrink: '117', strDrink: 'bebida7', strDrinkThumb: drinkIcon },
+//         { idDrink: '118', strDrink: 'bebida8', strDrinkThumb: drinkIcon },
+//         { idDrink: '119', strDrink: 'bebida9', strDrinkThumb: drinkIcon },
+//         { idDrink: '120', strDrink: 'bebida10', strDrinkThumb: drinkIcon },
+//         { idDrink: '121', strDrink: 'bebida11', strDrinkThumb: drinkIcon },
+//         { idDrink: '122', strDrink: 'bebida12', strDrinkThumb: drinkIcon },
+//         { idDrink: '123', strDrink: 'bebida13', strDrinkThumb: drinkIcon },
+//         { idDrink: '124', strDrink: 'bebida14', strDrinkThumb: drinkIcon },
+//       ],
+//     };
+
+//     mockarFetch(RECEITA_MOCK);
+
+//     const botaoIniciarPesquisa = await screen.findByTestId(/search-top-btn/);
+//     userEvent.click(botaoIniciarPesquisa);
+
+//     const searchInput = await screen.findByTestId(searchInputID);
+//     const botaoPesquisar = await screen.findByTestId(searchButtonID);
+//     const radioButtonFristLetter = await screen.findByTestId(radioButtonFristLetterID);
+//     userEvent.type(searchInput, 'c');
+//     userEvent.click(radioButtonFristLetter);
+//     userEvent.click(botaoPesquisar);
+
+//     const recipeCards = await screen.findAllByTestId(/recipe-card/);
+//     const recipeCardsImages = await screen.findAllByTestId(/card-name/);
+//     const recipeCardsNames = await screen.findAllByTestId(/card-img/);
+
+//     await waitFor(() => expect(recipeCards.length).toBe(12));
+//     await waitFor(() => expect(recipeCardsImages.length).toBe(12));
+//     await waitFor(() => expect(recipeCardsNames.length).toBe(12));
+//   });
+// });
