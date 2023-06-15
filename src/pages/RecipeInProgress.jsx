@@ -1,13 +1,148 @@
-import React from 'react';
-import Header from '../components/Header';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import Liked from '../components/Liked';
+import Compartilhar from '../components/Compartilhar';
 
-export default function RecipeInProgress() {
+function RecipeInProgress() {
+  const { id } = useParams();
+  const [recipeInProgress, setRecipeInProgress] = useState(null);
+  const [checkedIngredients, setCheckedIngredients] = useState([]);
+
+  useEffect(() => {
+    const fetchRecipeInProgress = async () => {
+      const response = await fetch(
+        window.location.pathname.includes('meals')
+          ? `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
+          : `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`,
+      );
+      const data = await response.json();
+      setRecipeInProgress(data.meals?.[0] || data.drinks?.[0]);
+    };
+
+    fetchRecipeInProgress();
+  }, [id]);
+
+  useEffect(() => {
+    const storedCheckedIngredients = JSON.parse(
+      localStorage.getItem('checkedIngredients'),
+    );
+    if (storedCheckedIngredients) {
+      setCheckedIngredients(storedCheckedIngredients);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      'checkedIngredients',
+      JSON.stringify(checkedIngredients),
+    );
+  }, [checkedIngredients]);
+
+  const handleIngredientClick = (event, ingredientIndex) => {
+    const { target } = event;
+    const isChecked = target.checked;
+    if (isChecked) {
+      setCheckedIngredients([...checkedIngredients, ingredientIndex]);
+    } else {
+      const updatedCheckedIngredients = checkedIngredients.filter(
+        (index) => index !== ingredientIndex,
+      );
+      setCheckedIngredients(updatedCheckedIngredients);
+    }
+  };
+
+  const renderIngredients = () => {
+    const limiteDeIngredientes = 21;
+    const ingredients = [];
+    for (let index = 0; index <= limiteDeIngredientes; index += 1) {
+      const ingredient = recipeInProgress[`strIngredient${index}`];
+      if (ingredient) {
+        const ingredientStepTestId = `${index - 1}-ingredient-step`;
+        const isChecked = checkedIngredients.includes(index);
+        ingredients.push(
+          <label
+            key={ index }
+            data-testid={ ingredientStepTestId }
+            style={ {
+              textDecoration: isChecked
+                ? 'line-through solid rgb(0, 0, 0)'
+                : 'none',
+            } }
+          >
+            <input
+              type="checkbox"
+              checked={ isChecked }
+              onChange={ (event) => handleIngredientClick(event, index) }
+            />
+            {ingredient}
+          </label>,
+        );
+      }
+    }
+    return ingredients;
+  };
+
+  if (!recipeInProgress) {
+    return <div>Loading...</div>;
+  }
+
+  const {
+    strMealThumb,
+    strMeal,
+    strCategory,
+    strInstructions,
+    strDrinkThumb,
+    strDrink,
+    strAlcoholic,
+  } = recipeInProgress;
+
+  // const ingredients = renderIngredients().length;
+  const verifyChecked = checkedIngredients.length === renderIngredients().length;
+
+  const finishRecipe = () => {
+    // Lógica para finalizar a receita
+  };
+
+  const recipeDetailsPathname = window.location.pathname.replace('/in-progress', '');
+
   return (
     <div>
-      <Header
-        title="RecipeInProgress"
-      />
-      <h1>Recipe in progress</h1>
+      <div>
+        <p data-testid="recipe-category">
+          {strMeal ? strCategory : `${strCategory} : ${strAlcoholic}`}
+        </p>
+        <Compartilhar pathname={ recipeDetailsPathname } />
+        <Liked receita={ recipeInProgress } />
+      </div>
+      <div>
+        <img
+          data-testid="recipe-photo"
+          src={ strMealThumb || strDrinkThumb }
+          alt="foto da receita"
+        />
+        <h1 data-testid="recipe-title">{strMeal || strDrink}</h1>
+      </div>
+      <div>
+        <div>
+          <h2>Ingredientes:</h2>
+          {renderIngredients()}
+        </div>
+        <p data-testid="instructions">{strInstructions}</p>
+        <button
+          data-testid="finish-recipe-btn"
+          onClick={ finishRecipe }
+          disabled={ !verifyChecked }
+          style={ {
+            position: 'fixed',
+            bottom: '0px',
+            width: '100%',
+          } }
+        >
+          Finalizar Receita
+        </button>
+      </div>
     </div>
   );
 }
+
+export default RecipeInProgress;
