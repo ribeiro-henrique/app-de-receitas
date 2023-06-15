@@ -12,6 +12,12 @@ function Compartilhar({ pathname }) {
     }
   };
 
+  // const getRecipeDetailsLink = () => {
+  //   const parts = pathname.split('/');
+  //   parts.pop(); // Remove o último elemento ("/in-progress")
+  //   return parts.join('/');
+  // };
+
   const handleCopyClick = async () => {
     const text = `http://localhost:3000${pathname}`;
     await copy(text);

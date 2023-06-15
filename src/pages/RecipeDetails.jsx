@@ -110,7 +110,7 @@ function RecipeDetails() {
             {pathname.includes('meals')
               ? strCategory : `${strCategory} : ${strAlcoholic}`}
           </p>
-          <Compartilhar pathname={ pathname } history={ history } />
+          <Compartilhar pathname={ pathname } history={ history } id={ id } />
           <Liked receita={ receita } />
         </div>
         <div>
