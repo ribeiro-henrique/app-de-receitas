@@ -6,7 +6,7 @@ import Liked from '../components/Liked';
 import Start from '../components/Start';
 
 const SEIS = 6;
-const LESS_ONE = -1;
+// const LESS_ONE = -1;
 
 function RecipeDetails() {
   const { id } = useParams();
@@ -39,7 +39,7 @@ function RecipeDetails() {
       if (pathname.includes('meals')) {
         setDrinkRecomendados(data.drinks?.slice(0, SEIS) || []);
       } else {
-        setComidasRecomendadas(data.meals?.slice(0, SEIS) || []);
+        setComidasRecomendadas(data.meals?.slice(0, SEIS));
       }
     };
 
@@ -54,13 +54,14 @@ function RecipeDetails() {
       const keysMeasurements = Object.keys(receita)
         .filter((element) => element.includes('Measure'));
 
-      const limiteDeIngredientes = 21;
+      // const limiteDeIngredientes = 21;
       const limite = keysIngredients.findIndex(
         (element) => receita[element] == null || receita[element] === '',
       );
+      console.log(limite);
 
       const listaDeIngredientes = keysIngredients
-        .slice(0, limite !== LESS_ONE ? limite : limiteDeIngredientes)
+        // .slice(0, limite !== LESS_ONE ? limite : limiteDeIngredientes)
         .map((element, index) => [
           element,
           `${index}-ingredient-name-and-measure`,

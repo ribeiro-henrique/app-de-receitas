@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
 import Liked from '../components/Liked';
 import Compartilhar from '../components/Compartilhar';
 
 function RecipeInProgress() {
   const { id } = useParams();
+  const history = useHistory();
+  const location = useLocation();
   const [recipeInProgress, setRecipeInProgress] = useState(null);
   const [checkedIngredients, setCheckedIngredients] = useState([]);
-
   useEffect(() => {
     const fetchRecipeInProgress = async () => {
       const response = await fetch(
@@ -18,26 +19,23 @@ function RecipeInProgress() {
       const data = await response.json();
       setRecipeInProgress(data.meals?.[0] || data.drinks?.[0]);
     };
-
     fetchRecipeInProgress();
   }, [id]);
-
+  const getLocalStorageKey = () => `checkedIngredients_${location.pathname}`;
   useEffect(() => {
     const storedCheckedIngredients = JSON.parse(
-      localStorage.getItem('checkedIngredients'),
+      localStorage.getItem(getLocalStorageKey()),
     );
     if (storedCheckedIngredients) {
       setCheckedIngredients(storedCheckedIngredients);
     }
   }, []);
-
   useEffect(() => {
     localStorage.setItem(
-      'checkedIngredients',
+      getLocalStorageKey(),
       JSON.stringify(checkedIngredients),
     );
   }, [checkedIngredients]);
-
   const handleIngredientClick = (event, ingredientIndex) => {
     const { target } = event;
     const isChecked = target.checked;
@@ -50,7 +48,6 @@ function RecipeInProgress() {
       setCheckedIngredients(updatedCheckedIngredients);
     }
   };
-
   const renderIngredients = () => {
     const limiteDeIngredientes = 21;
     const ingredients = [];
@@ -81,11 +78,9 @@ function RecipeInProgress() {
     }
     return ingredients;
   };
-
   if (!recipeInProgress) {
     return <div>Loading...</div>;
   }
-
   const {
     strMealThumb,
     strMeal,
@@ -95,16 +90,27 @@ function RecipeInProgress() {
     strDrink,
     strAlcoholic,
   } = recipeInProgress;
-
-  // const ingredients = renderIngredients().length;
-  const verifyChecked = checkedIngredients.length === renderIngredients().length;
-
-  const finishRecipe = () => {
-    // Lógica para finalizar a receita
+  const addRecipeToLocalStorage = () => {
+    const doneRecipes = JSON.parse(localStorage.getItem('doneRecipes')) || [];
+    const newRecipe = {
+      id: recipeInProgress.idMeal || recipeInProgress.idDrink,
+      nationality: recipeInProgress.strArea || '',
+      name: recipeInProgress.strMeal || recipeInProgress.strDrink,
+      category: recipeInProgress.strCategory || recipeInProgress.strAlcoholic,
+      image: recipeInProgress.strMealThumb || recipeInProgress.strDrinkThumb,
+      tags: recipeInProgress.strTags ? recipeInProgress.strTags.split(',') : [],
+      alcoholicOrNot: recipeInProgress.strAlcoholic || '',
+      type: recipeInProgress.idMeal ? 'meal' : 'drink',
+      doneDate: new Date().toISOString(),
+    };
+    localStorage.setItem('doneRecipes', JSON.stringify([...doneRecipes, newRecipe]));
   };
-
+  const verifyChecked = checkedIngredients.length === renderIngredients().length;
+  const finishRecipe = () => {
+    addRecipeToLocalStorage();
+    history.push('/done-recipes');
+  };
   const recipeDetailsPathname = window.location.pathname.replace('/in-progress', '');
-
   return (
     <div>
       <div>
@@ -144,5 +150,4 @@ function RecipeInProgress() {
     </div>
   );
 }
-
 export default RecipeInProgress;
